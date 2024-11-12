@@ -1,3 +1,6 @@
 .DS_Store
 .ipynb_checkpoints
 
+*config.py
+*mlruns
+*mlflow.db
