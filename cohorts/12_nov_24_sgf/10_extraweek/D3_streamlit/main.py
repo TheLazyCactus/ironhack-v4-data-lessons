@@ -4,7 +4,7 @@ import numpy as np
 import plotly.express as px
 import streamlit as st
 import pickle
-from streamlit_extras.add_vertical_space import add_vertical_space
+# from streamlit_extras.add_vertical_space import add_vertical_space
 
 ### Default best practice structure when you have multiple cols:
 # Define streamlit_element
@@ -15,121 +15,109 @@ from streamlit_extras.add_vertical_space import add_vertical_space
     # st.plotly_chart(plotly_fig)
     # st.markdown("Some markdown formatted text.")
     
-    
 ### Goal for today: Build and deploy an EDA and ML tool
+st.header("Customer Churn Analysis")
 # Elements we need: data to analyze, some interesting charts, and some model
-st.title("Customer Churn - Analysis & Prediction Model")
 data = pd.read_csv("https://raw.githubusercontent.com/sabinagio/data-analytics/main/data/customer_churn.csv").dropna()
-data['count'] = 1
-st.write(data.head())
-# st.write(data.dtypes)
-
-# Exploratory Data Analysis
-num_vars = data.select_dtypes(np.float64).columns
-# st.write(num_vars)
-cat_vars = data.drop(num_vars, axis=1).drop('customerID', axis=1).columns
-# st.write(cat_vars)
-st.markdown("## Exploratory Data Analysis")
-
-row0_spacer1, row0_1, row0_spacer2, row0_2, row0_spacer3 = st.columns(
-    (0.01, 2, 0.1, 2, 0.01)
-)
-with row0_1:
-    cat_var = st.selectbox("Categorical variable", cat_vars, key="cat_boxplot")
-with row0_2:    
-    num_var = st.selectbox("Numerical variable", num_vars, key="num_boxplot")
-fig = px.box(data, x=num_var, y=cat_var)
+st.write("This is our client data:")
+data.SeniorCitizen = data.SeniorCitizen.astype(bool)
+col = st.selectbox("", data.columns.drop("customerID"), index=len(data.columns)-2)
+if col in data.select_dtypes('number').columns:
+    fig = px.histogram(data, x=col)
+else:
+    fig = px.histogram(data, y=col)
+fig.update_layout(template="simple_white", width=600, height=600)
 st.plotly_chart(fig)
 
-row1_spacer1, row1_1, row1_spacer2, row1_2, row1_spacer3 = st.columns(
-    (0.01, 2, 0.1, 2, 0.01)
+st.markdown("### Exploratory Data Analysis")
+st.write("Dropwdown - option 1, no space")
+col1, col2 = st.columns(2)
+with col1:
+    charges = st.selectbox("", ("MonthlyCharges", "TotalCharges"))
+with col2:
+    cat_var = st.selectbox("", data.select_dtypes("object").columns.drop("customerID"))
+
+st.write("Dropwdown - option 2, with space")
+row0_spacer1, row0_1, row0_spacer2, row0_2, row0_spacer3 = st.columns(
+    (0.01, 2.5, 0.1, 2.5, 0.01)
 )
+with row0_1:
+    charges = st.selectbox("", ("MonthlyCharges", "TotalCharges"), key="charges2")
+with row0_2:
+    cat_var = st.selectbox("", data.select_dtypes("object").columns.drop("customerID"), key="catvar2")
 
-with row1_1:
-    cat_var = st.selectbox("Categorical variable", cat_vars)
-    fig = px.histogram(data, x=cat_var, y="count", color='Churn', 
-                       barmode='group', 
-                       color_discrete_sequence=['green', 'red'])
-    st.plotly_chart(fig)
-    
-with row1_2:
-    num_var = st.selectbox("Numerical variable", num_vars)
-    fig = px.histogram(data, x=num_var, facet_row='Churn')
-    st.plotly_chart(fig)
-    
-st.markdown("## Prediction Model")
+fig = px.histogram(data, x=charges, facet_row=cat_var)
+fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+st.plotly_chart(fig)
 
-# open pickle files in main (reading the models)
-with open("log_reg.pkl", "rb") as li:  # rb: mode read
-    log_model = pickle.load(li)
-
-with open("knn.pkl", "rb") as lo:
-    knn_model = pickle.load(lo)
-
-with open("bayes.pkl", "rb") as sv:
-    bayes_model = pickle.load(sv)
-    
 st.sidebar.title("Input Parameters")
-X_pred = {}
+features = {}
 
-for col in data.drop(['customerID', 'Churn', 'count'], axis=1).columns:
-    if data[col].nunique() > 2:
-        if data[col].dtype in [np.float64, np.int64]:
-            col_value = st.sidebar.slider(col, int(data[col].min()), int(data[col].max()), int(data[col].mean()))
-            X_pred[col] = col_value
-    else:
-        col_value = st.sidebar.selectbox(col, data[col].unique())
-        X_pred[col] = col_value
-        
-X_pred = pd.DataFrame(X_pred, index=[0])
-st.write("My customer has the following attributes:")
-st.write(X_pred)
+# st.sidebar.selectbox("gender", ("Male", "Female"))
+for col in data.select_dtypes(bool).columns:
+    features[col] = st.sidebar.checkbox(f"Is {col}?")
 
-# Preprocessing data
-from sklearn.preprocessing import MinMaxScaler
-scaler = MinMaxScaler()
-num_data = data.drop('count', axis=1).select_dtypes(np.number)
-scaler.fit(num_data)
+for col in data.select_dtypes(object).columns.drop(['customerID', 'Churn']):
+    features[col] = st.sidebar.selectbox(col, data[col].unique())
 
-X_pred_num = X_pred.select_dtypes(np.number)
-X_pred_num_scaled = pd.DataFrame(scaler.transform(X_pred_num), columns=scaler.get_feature_names_out())
-# st.write(X_pred_num_scaled)
+for col in data.select_dtypes('number').columns:
+    features[col] = st.sidebar.slider(col, min_value=data[col].min(), max_value=data[col].max())
 
-X_pred_cat = X_pred.select_dtypes(object)
-X_pred_cat_encoded = pd.get_dummies(X_pred_cat)
-# st.write(X_pred_cat_encoded)
 
-cat_data = data.drop(['customerID', 'Churn'], axis=1).select_dtypes(object)
-cat_data_encoded = pd.get_dummies(cat_data)
-cat_encoded_cols = cat_data_encoded.columns
+st.markdown("### Predict Customer Churn")
+# st.write(pd.DataFrame([features]))
+features_df = pd.DataFrame([features])
+features_df['SeniorCitizen'] = features_df['SeniorCitizen'].astype(int)
+features_df_num = features_df.select_dtypes('number')
+features_df_cat = features_df.select_dtypes(object)
+features_df_cat_encoded = pd.get_dummies(features_df_cat)
 
-data_prep = pd.concat([num_data, cat_data_encoded], axis=1)
-prep_columns = data_prep.columns
+# st.write(features_df_cat_encoded.T)
+# st.write(pd.get_dummies(data.drop("customerID", axis=1).select_dtypes(object)).T)
 
-for col in cat_encoded_cols:
-    if col not in X_pred_cat_encoded.columns:
-        X_pred_cat_encoded[col] = False
-        
-# st.write(X_pred_cat_encoded)
+scaler = pickle.load(open("prep/scaler.pkl", "rb"))
+features_df_num_scaled = pd.DataFrame(scaler.transform(features_df_num), columns=scaler.feature_names_in_)
 
-X_pred_prep = pd.concat([X_pred_num_scaled, X_pred_cat_encoded], axis=1)
+# st.write(features_df_cat.columns)
 
-model_options = ['Logistic Regression', 'KNN', 'Naive Bayes']
-model = st.selectbox("Select predictive model", model_options)
+log_model = pickle.load(open("models/log_reg.pkl", "rb"))
+knn_model = pickle.load(open("models/knn.pkl", "rb"))
+nb_model = pickle.load(open("models/bayes.pkl", "rb"))
 
-st.write("Will my customer churn?")
-if st.button("Find out"):
-    if model == 'Logistic Regression':
-        pred = log_model.predict(X_pred_prep[prep_columns])
-    elif model == 'KNN':
-        pred = knn_model.predict(X_pred_prep[prep_columns])
-    elif model == 'Naive Bayes':
-        pred = bayes_model.predict(X_pred_prep[prep_columns])
-    st.write(pred[0])
-     
+model = st.selectbox("Select a model to use", ("Logistic Regression", "KNN", "Naive Bayes"))
 
-# Do predictions
+def add_categorical_features(pred_df, model_features, num_features):
+    model_df = pred_df.copy()
+    for feature_name in model_features:
+        if feature_name not in num_features:
+            if feature_name not in pred_df.columns:
+                model_df[feature_name] = False
+    return model_df[model_features]
 
+pred_df = pd.concat([features_df_num_scaled, features_df_cat_encoded], axis=1)
+button = st.button("Predict Customer Churn")
+
+if model == "Logistic Regression":
+    feature_names = log_model.feature_names_in_
+    pred_df = add_categorical_features(pred_df, model_features=feature_names, num_features=features_df_num_scaled.columns)
+    
+    if button:
+        pred_result = log_model.predict(pred_df)
+        st.write(f"Did the customer churn? {pred_result[0]}")
+
+if model == "KNN":
+    feature_names = knn_model.feature_names_in_
+    pred_df = add_categorical_features(pred_df, model_features=feature_names, num_features=features_df_num_scaled.columns)
+    if button:
+        pred_result = knn_model.predict(pred_df)
+        st.write(f"Did the customer churn? {pred_result[0]}")
+
+if model == "Naive Bayes":
+    feature_names = nb_model.feature_names_in_
+    pred_df = add_categorical_features(pred_df, model_features=feature_names, num_features=features_df_num_scaled.columns)
+    if button:
+        pred_result = nb_model.predict(pred_df)
+        st.write(f"Did the customer churn? {pred_result[0]}")
 
 
 
