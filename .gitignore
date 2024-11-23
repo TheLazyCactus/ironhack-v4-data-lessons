@@ -10,5 +10,5 @@
 #for a .env file
 .env 
 #for a secrets.txt file
-secrets.txt
+secret.txt
 *.json
