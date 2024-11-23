@@ -7,3 +7,8 @@
 *mlruns
 *mlruns.db
 *mlflow.db
+#for a .env file
+.env 
+#for a secrets.txt file
+secrets.txt
+*.json
