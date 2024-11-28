@@ -69,7 +69,6 @@ for col in data.columns.drop("Churn"):
     else:
         features[col] = st.sidebar.selectbox(col, data[col].unique())
 
-
 st.markdown("### Predict Customer Churn")
 
 # Collect data about current client and add in a df
@@ -102,29 +101,29 @@ button = st.button("Predict Customer Churn")
 
 # Load model
 model = pickle.load(open("models/log_reg.pkl", "rb"))
+knn = pickle.load(open("models/knn.pkl", "rb"))
+nb = pickle.load(open("models/bayes.pkl", "rb"))
+
+st.selectbox("Model", ["Logistic Regression", "KNN", "Naive Bayes"])
+if model == "Logistic Regression":
+    feature_names = model.feature_names_in_
+    
+    if button:
+        pred_result = model.predict(features_df_prep[feature_names])
+        st.write(f"Did the customer churn? {pred_result[0]}")
+
+if model == "KNN":
+    feature_names = knn.feature_names_in_
+
+    if button:
+        pred_result = knn.predict(features_df_prep[feature_names])
+        st.write(f"Did the customer churn? {pred_result[0]}")
+
+if model == "Naive Bayes":
+    feature_names = nb.feature_names_in_
+    if button:
+        pred_result = nb.predict(features_df_prep[feature_names])
+        st.write(f"Did the customer churn? {pred_result[0]}")
 
 if button:
     st.write(model.predict(features_df_prep[model.feature_names_in_])[0])
-# 
-# if model == "Logistic Regression":
-#     feature_names = log_model.feature_names_in_
-#     pred_df = add_categorical_features(pred_df, model_features=feature_names, num_features=features_df_num_scaled.columns)
-#     
-#     if button:
-#         pred_result = log_model.predict(pred_df)
-#         st.write(f"Did the customer churn? {pred_result[0]}")
-# 
-# if model == "KNN":
-#     feature_names = knn_model.feature_names_in_
-#     pred_df = add_categorical_features(pred_df, model_features=feature_names, num_features=features_df_num_scaled.columns)
-#     if button:
-#         pred_result = knn_model.predict(pred_df)
-#         st.write(f"Did the customer churn? {pred_result[0]}")
-# 
-# if model == "Naive Bayes":
-#     feature_names = nb_model.feature_names_in_
-#     pred_df = add_categorical_features(pred_df, model_features=feature_names, num_features=features_df_num_scaled.columns)
-#     if button:
-#         pred_result = nb_model.predict(pred_df)
-#         st.write(f"Did the customer churn? {pred_result[0]}")
-# 
