@@ -2,19 +2,19 @@
 
 ## PANDAS
 
-### Steps to take when working w/a new dataset
-1. Check dataset shape, nulls, clean if needed
-2. Come up with questions your interested in, go from high-level to low-level
-Add example
+### Steps to take when working with a new dataset  
+1. Check dataset shape, nulls, clean if needed  
+2. Come up with questions your interested in, go from high-level to low-level    
+EXAMPLES TO BE ADDED
 3. Start EDA, find issues with the dataset and fix them as you go. The issues can be things like:
     * wrong data types
     * wrong values, e.g. ages around 200 years
     * inconsistent values, e.g. M, male, men for the same gender
-4. Repeat 2 and 3 until you've answered your most pressing questions
+4. Repeat 2. and 3. until you've answered your most pressing questions
 
 ### When to use a quick EDA vs a more formal analysis
-    * quick EDA: Good for simple questions or questions that don't require 100% accuracy or for when you're in a time crunch. Or for when you want to find ideas.
-    * formal analysis: For when you have time to do it, mainly. It's typically when you need to answer the most important business questions, and you need to get it right.
+* **quick EDA**: Good for simple questions or questions that don't require 100% accuracy or for when you're in a time crunch. Orfor when you want to find ideas.
+* **formal analysis**: For when you have time to do it, mainly. It's typically when you need to answer the most important business questions, and you need to get it right.
 
 ### Standard workflow for cleaning messy data efficiently
 The 2 and 3 from above. There's no cookie-cutter answer. At most, you can automate data validation using Pydantic (easy mode) or great_expectations (hard mode, not worth it for static data)
@@ -27,13 +27,28 @@ The 2 and 3 from above. There's no cookie-cutter answer. At most, you can automa
 
 ### Is there a complementary function to cdf?  (sf(x) = 1 - cdf(x))
 
-### Ppt day:    - Proper way to manage Vanguard project
-                         - Discrepancies between results management
-                         - Experiment Evaluation adequate test (attaching my recommendation to Borja that morning where I seemed convinced about a Z-test—but you said it should have been a T-test instead)
-                         - Repos: worth the time they take? Other ways to present our work (Miguel kindly show his last Sat)
+### Vanguard project
+
+#### Proper way to manage Vanguard project
+
+#### Discrepancies between results management
+
+#### Experiment Evaluation adequate test (attaching my recommendation to Borja that morning where I seemed convinced about a Z-test—but you said it should have been a T-test instead)
+
+#### Repos: Worth the time they take? Other ways to present our work (Miguel kindly show his last Sat)
+Having a good repo is definitely worth it, be it on GitHub or Tableau Public - this depends on whether you want to focus more on data science (Git) or data analysis (Tableau).
+
+But the README.md doesn't have to be extra technical. 
+* If you built something like a streamlit app, I would highly encourage you do a video to showcase how it works, presentation included, and put that at the very beginning. 
+* If it's a model, give examples of how it performs on different data and how it's solving a problem. 
+* If it's an analysis, focus on the impact and main findings 
+
+Then, the custom is to give instructions on how to replicate your work, especially for Streamlit apps and ML models. Then, you can get into the main steps of what you did. But product/impact always come first.
+
 ## VIZ
 
 ### Best chart type for the different types of data recap
+
 ### How can I ensure my visualizations are accessible and clear for stakeholders? How much knowledge do I assume they have?  
     * First off, they need to be clear to you. And by clear to you I mean that you should be able to get the gist of what's happening in 5 seconds. If you don't, it's probs too complicated.
 
