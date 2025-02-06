@@ -50,7 +50,8 @@ Then, the custom is to give instructions on how to replicate your work, especial
 ### Best chart type for the different types of data recap
 
 ### How can I ensure my visualizations are accessible and clear for stakeholders? How much knowledge do I assume they have?  
-    * First off, they need to be clear to you. And by clear to you I mean that you should be able to get the gist of what's happening in 5 seconds. If you don't, it's probs too complicated.
+* First off, they need to be clear to you. And by clear to you I mean that you should be able to get the gist of what's happening in 5 seconds. If you don't, it's probs too complicated.
+* Second off is a work in progress.
 
 ### What challenges do analysts typically face when presenting results to non-technical stakeholders?  
 Explaining what they did simply and **why it's important**. You can get very stuck in technical details that are irrelevant to stakeholders.  
@@ -58,11 +59,11 @@ Explaining what they did simply and **why it's important**. You can get very stu
 ### Difference between statistical significance and practical significance
 
 Practical significance is: **How wrong can I afford to be about this** It's a decision-making question that requires a decision-making framework. Things to keep in mind:
-    * What is the cost of getting it wrong? Do we lose $10, $100, $1,000, $1M? Will people die?
-        * If I get a false positive, what's the worst that can happen? e.g. if I wrongly say that the new UI interface design is better, how many clients will I lose?
-        * If I get a false negative, what's the worst that can happen? e.g. if I wrongly say that a treatment is not working, what opportunity am I losing?
-    * How much would I be willing to pay to get this right? 
-    * How reversible is the decision I will make based on this result? A lot of decisions are easily reversible, i.e. you don't need to worry too much about a good significance level
+* What is the cost of getting it wrong? Do we lose $10, $100, $1,000, $1M? Will people die?
+    * If I get a false positive, what's the worst that can happen? e.g. if I wrongly say that the new UI interface design isbetter, how many clients will I lose?
+    * If I get a false negative, what's the worst that can happen? e.g. if I wrongly say that a treatment is not working, whatopportunity am I losing?
+* How much would I be willing to pay to get this right? 
+* How reversible is the decision I will make based on this result? A lot of decisions are easily reversible, i.e. you don'tneed to worry too much about a good significance level
 
 Statistical significance is the number you put on the practical significance - both for the false positive cost (alpha) and false negative cost (beta).
 
