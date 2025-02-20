@@ -1,9 +1,17 @@
 import unittest
 from main import addition, MathOperations
+from functools import partial
 
 class TestExample(unittest.TestCase):
-    def test_addition(self): # Start with test_
-        self.assertEqual(addition(2, 2), 4)
+    def test_addition(self):
+        tests = [
+            (2, 2, 4),  # will pass
+            (2, 3, 6),  # will fail
+            (3, 3, 6)
+        ]
+        for a, b, expected in tests:
+            with self.subTest(a=a, b=b, expected=expected):
+                self.assertEqual(addition(a, b), expected)
 
 class TestSetupExample(unittest.TestCase):
     def setUp(self):
