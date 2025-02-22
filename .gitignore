@@ -12,3 +12,7 @@
 #for a secrets.txt file
 secrets.txt
 *.json
+
+*Solution*
+*solution*
+*labs/*

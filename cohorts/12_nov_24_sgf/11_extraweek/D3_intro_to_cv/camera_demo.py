@@ -5,7 +5,7 @@ import numpy
 PREVIEW  = 0  # Preview Mode
 BLUR     = 1  # Blurring Filter
 FEATURES = 2  # Corner Feature Detector
-CANNY    = 3  # Canny Edge Detector
+CANNY    = 3  # Canny Edge Detecctor
 
 feature_params = dict(maxCorners=500, qualityLevel=0.2, minDistance=15, blockSize=9)
 s = 0
