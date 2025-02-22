@@ -9,14 +9,14 @@ USE bank;
 -- BASIC QUERIES
 -- ==================================================
 
--- Selecting all the data from table trans
+-- Selecting all the data from table trans                                          
 SELECT * FROM trans;
 
 -- It's good practice to use the database name when referencing tables 
 -- especially when working with multiple databases on a server.
 SELECT * FROM bank.trans;
 
--- Selecting specific columns
+-- Selecting specific columns                                                                  
 SELECT trans_id, account_id, date, type FROM bank.trans;
 
 -- Fully qualifying columns with database and table names

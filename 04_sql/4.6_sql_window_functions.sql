@@ -16,7 +16,21 @@ USE bank;
 -- Let's start with a simple aggregation to understand how aggregation functions
 -- are different from window functions.
 -- Getting the average loan amount for comparison purposes
+
+SELECT * FROM loan;
 SELECT AVG(amount) AS 'Avg_amount' FROM bank.loan;
+
+SELECT DISTINCT status FROM loan;
+SELECT DISTINCT duration FROM loan;
+
+
+SELECT 
+	status, duration,
+    AVG(amount) AS 'Avg_amount'
+FROM
+    bank.loan
+GROUP BY
+	status, duration;
 
 -- As you can see, only one value is returned.
 
@@ -27,6 +41,14 @@ SELECT status,
        amount,
        AVG(amount) OVER() AS 'Avg_amount' -- This window function computes the average amount over the entire dataset
 FROM bank.loan;
+
+CREATE OR REPLACE VIEW
+(SELECT status,
+       loan_id, 
+       duration, 
+       amount,
+       AVG(amount) OVER() AS 'Avg_amount' -- This window function computes the average amount over the entire dataset
+FROM bank.loan);
 
 
 -- Now, we may want to compute the average by `status` to compare every loan amount against the average by status.
@@ -56,8 +78,17 @@ SELECT status,
        loan_id, 
        duration, 
        amount,
-       AVG(amount) OVER(PARTITION BY status, duration ORDER BY status, duration, amount DESC) AS 'Avg_amount'
+       AVG(amount) OVER(PARTITION BY status, duration ORDER BY status, duration DESC) AS 'Avg_amount'
 FROM bank.loan;
+
+SELECT status,
+       loan_id, 
+       duration, 
+       amount
+FROM loan
+ORDER BY status, duration, amount DESC;
+
+-- 104808 + 116832 / 2 = 163224
 
 -- OR
 SELECT status,
@@ -71,14 +102,15 @@ ORDER BY status, duration, amount DESC;
 -- Using multiple window functions in a single query
 -- In this case, we're using ROW_NUMBER to assign a unique sequential integer to rows within a partition of a result set
 SELECT status,
-       loan_id, 
-       duration, 
+	   -- duration,
+       -- loan_id, 
        amount,
-       AVG(amount) OVER(PARTITION BY status, duration) AS 'Avg_amount',
-       ROW_NUMBER() OVER(PARTITION BY status, duration ORDER BY status, duration, amount DESC) AS 'Row_number'
+       -- AVG(amount) OVER(partition by status) AS Avg_amount_per_status
+       ROW_NUMBER() OVER(PARTITION BY status) AS 'Row_number',
+       RANK() OVER(PARTITION BY status ORDER BY amount DESC) AS 'Rank',
+       DENSE_RANK() OVER(PARTITION BY status ORDER BY amount DESC) AS 'Dense_Rank'
 FROM bank.loan
-ORDER BY status, duration, amount DESC;
-
+ORDER BY status;
 
 -- Cumulative sum of transaction amounts by account_id
 SELECT account_id, 
@@ -143,6 +175,8 @@ WHERE k_symbol <> " ";
 -- The LAG function is a window function that provides access to more than one row of a table at the same time.
 -- LAG accesses data from a previous row in the same result set without the use of a self-join. 
 
+
+
 -- Write a query to find the month on month monthly active users (MAU)
 -- Use lag() function to get the active users in the previous month
 
@@ -155,7 +189,7 @@ CREATE OR REPLACE VIEW user_activity AS
 SELECT account_id, 
        CONVERT(date, DATE) AS Activity_date,
        DATE_FORMAT(CONVERT(date,DATE), '%M') AS Activity_Month,
-       DATE_FORMAT(CONVERT(date,DATE), '%m') AS Activity_Month_number,
+       DATE_FORuser_activityMAT(CONVERT(date,DATE), '%m') AS Activity_Month_number,
        DATE_FORMAT(CONVERT(date,DATE), '%Y') AS Activity_year
 FROM bank.trans;
 

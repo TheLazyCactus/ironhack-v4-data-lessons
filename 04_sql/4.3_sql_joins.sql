@@ -13,32 +13,93 @@ USE bank;
 -- INNER JOIN. 
 -- Joining account and loan tables to get information about accounts with associated loans.
 -- As you can see, we use simply `join` to do an `inner join`.
-SELECT * FROM bank.account AS a
-JOIN bank.loan AS l
-ON a.account_id = l.account_id;
+
+SELECT * FROM loan;
+SELECT * FROM account;
+
+SELECT * FROM loan
+LEFT JOIN account ON loan.account_id = account.account_id;
+
+SELECT COUNT(*) FROM loan
+LEFT JOIN account ON loan.account_id = account.account_id; -- 682 records / rows
+
+SELECT * FROM loan
+RIGHT JOIN account ON loan.account_id = account.account_id;
+
+SELECT COUNT(*) FROM loan
+RIGHT JOIN account ON loan.account_id = account.account_id; -- 4.5K records / rows
+
+SELECT COUNT(*) FROM loan
+JOIN account ON loan.account_id = account.account_id; -- 2.5K / 682 
+
+SELECT * FROM loan
+FULL JOIN account USING(account_id); -- 3.8K / 4.5K
+
+SELECT COUNT(*) FROM loan
+FULL JOIN account USING(account_id);
+
+SELECT * FROM loan;
+-- Error Code: 1054. Unknown column 'account.loan_id' 
+-- Error Code: 1054. Unknown column 'loan.account_id' in 'on clause'
+
+SELECT loan_id AS id, account_id, date, amount, duration, payments, status FROM loan;
+
+SELECT COUNT(*) FROM loan
+JOIN account USING(account_id);
+
+SELECT * FROM disp;
+SELECT DISTINCT type FROM disp;
+
+SELECT date, account_id, trans.type, disp.type, amount
+FROM trans
+JOIN disp
+USING(account_id);
+
+SELECT * FROM trans;
+
+SELECT * FROM trans AS t1 JOIN trans as t2 USING(account_id);
+
+SELECT 
+    t.date, t.account_id, t.type, d.type, t.amount
+FROM
+    trans AS t
+        JOIN
+    disp AS d USING (account_id);
+
+-- Error Code: 1052. Column 'type' in field list is ambiguous
+
 
 
 -- Joining account and loan tables but selecting specific columns.
-SELECT a.account_id, a.district_id, l.loan_id, l.duration, l.amount FROM bank.account AS a
-JOIN bank.loan AS l
-ON a.account_id = l.account_id;
+SELECT 
+    a.account_id, a.district_id, l.loan_id, l.duration, l.amount
+FROM
+    bank.account AS a
+        JOIN
+    bank.loan AS l ON a.account_id = l.account_id;
 
 -- For `inner joins`, it doesn't matter which table is the `left table` and which one is the `right table`
 -- as we gather the common information. 
 -- Now let's use a `left join` to see what happens
 -- Using a LEFT JOIN to get all accounts with or without associated loans.
-SELECT a.account_id, a.district_id, l.loan_id, l.duration, l.amount FROM bank.account AS a
-LEFT JOIN bank.loan AS l
-ON a.account_id = l.account_id;
+SELECT 
+    a.account_id, a.district_id, l.loan_id, l.duration, l.amount
+FROM
+    bank.account AS a
+        LEFT JOIN
+    bank.loan AS l ON a.account_id = l.account_id;
 
 -- As you can see, you get a lot of nulls for columns because not all the accounts have an associated loan
 -- and we gather ALL THE INFORMATION IN THE LEFT TABLE (table `account`); ie. all the accounts.
 
 -- Let's see what happens with the previous query if change the join, to be a `right join`
 -- Using a RIGHT JOIN to get all loans with or without associated accounts.
-SELECT a.account_id, a.district_id, l.loan_id, l.duration, l.amount FROM bank.account AS a
-RIGHT JOIN bank.loan AS l
-ON a.account_id = l.account_id;
+SELECT 
+    a.account_id, a.district_id, l.loan_id, l.duration, l.amount
+FROM
+    bank.account AS a
+        RIGHT JOIN
+    bank.loan AS l ON a.account_id = l.account_id;
 
 -- As you can see, now we obtain again all the accounts which have an associated loan because we are gathering
 -- ALL THE INFORMATION FROM THE RIGHT TABLE (table `loan`)
@@ -160,6 +221,15 @@ WHERE d1.type = 'DISPONENT';
 -- ==================================================
 -- BONUS: CROSS JOINS
 -- ==================================================
+
+SELECT * FROM district;
+
+-- [1, 2, 3]
+-- [12, 13, 21, 31, 23, 32]
+
+SELECT d1.A2, d2.A2 FROM district AS d1 CROSS JOIN district AS d2;
+-- Error Code: 1066. Not unique table/alias: 'district'
+-- Error Code: 1052. Column 'A2' in field list is ambiguous
 
 
 -- A cross join is used when you wish to create a combination of every row from two tables. The main idea of the cross join is that it returns the Cartesian product of the joined tables. Each row from one table is connected to every other row in the other table.
